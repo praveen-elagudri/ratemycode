@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head %}
+<script src="{% static 'assets/js/custom.js' %}"></script>
+<script src="{% static 'assets/lib/slick/slick.js' %}"></script>
+<script src="{% static 'assets/lib/select2/js/select2.full.min.js' %}"></script>
+<script src="{% static 'simplePagination/jquery.twbsPagination.min.js' %}"></script>
+{% endblock head %}
+
+{% block main %}
+<div class="page-header" style="padding-bottom:15px; border-bottom: 1px solid #000; margin-bottom: 60px;">
+    <h1>Take Coding Challenge</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-1">
+        <div class="table-responsive question-list-table" >
+            <table class="table table-striped" id="table">
+                <thead>
+                <tr class="reactable-column-header" style="font-size:18px;">
+                    <th width="10%" scope="col" class="text-center"><strong>#</strong></th>
+                    <th width="60%" scope="col" class="text-center"><strong>Title</strong></th>
+                    <th width="10%" scope="col" class="text-center"><strong>Difficulty</strong></th>
+                    <th width="20%" scope="col" class="text-center"><strong>Solve this Question</strong></th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+            <div id="pager">
+              <ul id="pagination" class="pagination-sm"></ul>
+            </div>
+        </div>        
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    var question_id;
+    var qtitle;
+    $.ajax({
+        type:'GET',
+        dataType:'json',
+        url:'/challenge/all/',
+        // url:'http://ec2-13-57-203-122.us-west-1.compute.amazonaws.com:8080/challenge/all/',
+        success:function (data) {
+           // console.log(data);
+           // console.log(data[1]);
+
+            $.each( data, function( key, value ) {
+              //  console.log( key + ": " + JSON.stringify(value ));
+
+                $('#tbody').append(`
+                    <tr style="font-size:16px; height: 65px;" value ="${key}">
+                        <td id ="qid" class="text-center" style="padding:20px;">${key}</td>
+                        <td id ="qtitle" class="text-center" style="padding:20px;" ><span>${value.qtitle}</a>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        <td id="difficulty" class="text-center" style="padding:20px;"><span class="label label-success round" style="font-size:15px" >${value.difficulty}</span></td>
+                        <td id="send_question_id" class="text-center" style="padding:20px;"><span class="label label-primary" style="font-size:15px" id="${key}" >Solve Problem</span></td>
+                    </tr>
+            `);
+            });
+        } ,
+
+        // done(showId( msg ) {
+        //     alert(  msg );
+        // })
+    });       
+});
+
+</script>
+
+
+
+<script type="text/javascript">
+$("#table").on('click','tr',function(e){
+    e.preventDefault();
+    //var id = $(this).attr('value');
+      
+    var question_id = $(this).children("td:eq(0)").html();   
+    var qtitle = $(this).children("td:eq(1)").text();        
+    var qdifficulty =$(this).children("td:eq(2)").text();  
+
+    var items = [question_id, qtitle, qdifficulty];
+
+    localStorage.setItem('myKey', JSON.stringify(items));
+
+    console.log(items)
+    console.log(items.length); 
+    location.href="{% url 'problem' %}" ;
+      
+}); 
+
+    // function showId(id, qtitle){
+        //onclick="showId(${key})"
+
+    //     //var qtitle = $("#qtitle").val();
+    //     console.log(qtitle)
+    //     question_id =id;       
+    //     localStorage.setItem('question_id',id);
+    //     console.log("current job id: "+ question_id);
+    //     //alert("current question id: "+ question_id);
+    //     //location.href="{% url 'problem' %}" ;
+    // }
+</script>
+
+
+{% endblock main %}
+
+

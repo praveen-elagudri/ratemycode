@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'assets/css/jquery-ui.css' %}">
+
+<link rel="stylesheet" href="{% static 'assets/css/color.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+
+<!--<script src="{% static 'assets/js/custom.js' %}"></script>-->
+<link rel="stylesheet" href="{% static 'lib/codemirror.css' %}">
+<script src="{% static 'lib/codemirror.js' %}"></script>
+<script src="{% static 'mode/python/python.js' %}"></script>
+
+{% endblock head %}
+
+{% block main %}
+
+<div class="container" style="margin-bottom: 50px;">
+    <div class="row">
+        <div class="col-md-12 ">
+            <h3 id="q_title"></h3>
+                <div class="panel">
+                    <div class="col-md-10 "> 
+                        <div class="panel-body" id="q_description" style="font-size: 15px;">                                                      
+                                                           
+                        </div>
+                    </div>
+                </div>                
+        </div>
+        <div class="col-md-12 "> 
+            <div style="margin-bottom: 20px; border: 1px solid #f4f4f4;" id="codeeditor"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 ">
+
+            <button value="submit" id="submit" class="pull-right btn btn-primary btn-lg" >Submit</button>
+            <button valu id="run" class="btn btn-default btn-lg" style="margin-left: 1000px;" >Run</button>
+
+            <div class="container" style="display: none; margin-top: 10px;" id="panel-run">
+                <div class="panel panel-default" >
+                    <div class="panel-heading">
+                        <button aria-label="Close" class="close" type="button"><span aria-hidden="true">×</span></button>
+                        <h4>Run Code Result: 
+                        <span id="loading" style="display: none; ">
+                          Loading...
+                        </span> </h4>                      
+                    </div>
+                    <div class="panel-body">   
+                        <div class="col-lg-12">
+                            <h5>Your input</h5>
+                            <pre id="input"></pre>                                    
+                        </div>
+
+                        <div class="col-lg-12">
+                            <h5>Your Output</h5>
+                            <pre id="output"></pre>                                    
+                        </div>
+                        <div class="col-lg-12 hidden">
+                            <h5> Your stdout</h5>
+                            <pre></pre>
+                        </div>
+                        <div>
+                        <div class="col-lg-6">
+                            <h5>Your answer</h5>
+                            <pre><span id="actual_answer"><br></span></pre>
+                        </div>
+                        <div class="col-lg-6">
+                            <h5>Expected answer</h5>
+                            <pre><span id="expected_answer"><br></span></pre>
+                        </div>                                    
+                        </div>
+                        <div class="col-lg-12 runtime-result">
+                            <h5>Runtime: </h5>
+                            <pre><span id="actual_runtime"><br></span></pre>
+                        </div>
+                              
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+           
+
+            <div class="container" style="display: none; margin-top: 10px;" id="panel-show">
+                <div class="panel panel-default" >
+                    <div class="panel-body">
+                         <div class="col-md-12">
+                            <h4>Submission Result:<span id="loading" style="display: none; "> Loading... </span>
+                            <a id="result_state" href="" class="text-success"></a>
+                            </h4>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+ </div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+
+        var items = localStorage.getItem('myKey');
+        items = JSON.parse(items)      
+        console.log('retrievedValue: ', items);
+             
+        var question_id = items[0];
+        console.log('question id received: '+ question_id);
+
+        var runtime;
+
+
+        var fileName;
+        var runBtnClick = false;
+
+
+
+        ///var isTested;
+        $.ajax({
+            type:'GET',
+            dataType:'json',
+            url:'/challenge/problem?qid=' + question_id,
+            success:function (data) {
+                // console.log(data);
+                var q_description = data.detail;       //console.log(q_description);
+                var fileContent = data.fileContent;    //console.log(fileContent);
+                fileName = data.fileName;              //console.log(fileName);
+                               
+                var r = fileName.split(".");
+                var r1 = r.slice(0,r.length-2).join("."); //console.log(r1)
+               
+               function cap(r1) {
+                return r1.split('-').map(function (e) {
+                    return e.replace(/([a-z])/, function (match, value) {
+                        return value.toUpperCase();
+                    })
+                    }).join(' ');
+                }
+
+                var finalFileName = cap(r1);            //console.log(finalFileName)
+
+                $('#q_title').html(finalFileName);
+                $('#q_description').html(q_description.replace(/\n/g, '<br/>'));
+
+
+                var editor = CodeMirror(document.getElementById("codeeditor"), {
+                    lineNumbers: true,
+                    firstLineNumber: 1,
+                    extraKeys: {"Ctrl-Space": "autocomplete"},
+                    matchBrackets: true,
+                    mode: "text/x-python",
+                    cursorScrollMargin:50
+                });
+                editor.setValue(fileContent);
+
+
+                // cookie start
+                function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+                }
+                var csrftoken = getCookie('csrftoken');
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });
+                // cookie end
+
+                // $("#run").click(function(){
+                $("body").on('click','#run',function(e){
+                    //runBtnClick = true;
+                    run_method();
+                 });
+
+                $(document).ajaxStart(function() {
+                      $("#loading").show();
+                    }).ajaxStop(function() {
+                      $("#loading").hide(); 
+                });
+        
+                user = getUserName()
+                data = JSON.stringify({"user":user})
+                $.ajax({
+                    type: "POST",
+                    url:'/rating/',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data:data,
+                    success: function(data) {   
+                        console.log(data)
+                    }
+                });
+
+
+                function run_method() {  
+                   runBtnClick = true;                     //console.log("in run method--- run btn clicked..!!!  Its value now----" + runBtnClick ) 
+                   var editorContent = editor.getValue();  //console.log(editorContent);  
+                   //fileName = data.fileName;    
+                    var items = localStorage.getItem('myKey');
+                    items = JSON.parse(items)
+                    qid = items[0]
+                    qtitle = items[1]
+                    cat = items[2]
+                    
+                    user = getUserName()         
+
+                   
+                   data = JSON.stringify({"user":user,"editorContent": editorContent, 
+                                    "isTested": "True","fileName":fileName, "qid" : qid, "qtitle": qtitle, "cat":cat})
+                  console.log("Run Data Before Post --> "+data)
+                    $.ajax({
+                        type: "POST",
+                        url:'/challenge/runcode/',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        data:data,
+                        success: function(data) {                             
+                            console.log("Run Data After Post Method --> "+ JSON.stringify(data));    
+                            //console.log("Output: "+data.output);
+                            $('#output').html(data.output); 
+
+                             $.each(data, function(key, value) {  
+
+                                if(key==="name"){
+                                    $('#actual_runtime').html(data["mame"] + " : " + data["detail"]); 
+                                    return;
+                                }                              
+
+                                if(key === "actual"){                                    
+                                    var actualArray = $.map(value, function(element,index) {
+                                    //console.log(index +" : "+element );
+                                    return element;                                    
+                                })
+                                   //console.log(actualArray);                                      
+                                   var actual_runtime = actualArray[0];  //console.log("ACTUAL RUNTIME: " + actual_runtime)
+                                   runtime = actualArray[0];
+                                   var actual_answer = actualArray[1];   //console.log("ACTUAL ANSWER: " + actual_answer)
+                                   var actual_stdout = actualArray[2];   //console.log("ACTUAL STDOUT: " + actual_stdout) 
+
+                                    $('#actual_answer').html(actual_answer);
+                                    $('#actual_runtime').html(actual_runtime);
+                                }
+
+                                if(key === "expected"){                                    
+                                    var expectedArray = $.map(value, function(element,index) {
+                                    //console.log(index +" : "+element );
+                                    return element;                                    
+                                })
+                                    //console.log(expectedArray);                                      
+                                    var expected_runtime =expectedArray[0]; //console.log("EXPECTED RUNTIME: " + expected_runtime)
+
+                                    var expected_answer=expectedArray[1];   //console.log("EXPECTED ANSWER: " + expected_answer)
+                                    var expected_stdout =expectedArray[2];  //console.log("EXPECTED STDOUT: " + expected_stdout)
+
+                                    $('#expected_answer').html(expected_answer);
+                                }
+
+                                if(key === "input") { 
+                                var input = value;                                   
+                                    //console.log( "input: " + input);
+                                    $('#input').html(input);                                    
+                                    return false; 
+                                }
+                                  // $.each(value, function(k, val) {
+                                  //   console.log(k + ":" + val);  
+                                  // });
+                            });
+                        }
+                    });
+                    $('#panel-run').show();
+                    $('#panel-show').hide();
+                }
+                
+                 $(document).ajaxStart(function() {
+                      $("#loading").show();
+                    }).ajaxStop(function() {
+                      $("#loading").hide(); 
+                });
+
+                $("#submit").click(function(){
+
+
+
+                    var items = localStorage.getItem('myKey');
+                    items = JSON.parse(items)
+                    qid = items[0]
+                    qtitle = items[1]
+                    cat = items[2]
+                    
+                    if(runBtnClick){
+                       var isTested = "True";     //console.log("Is run button clicked ? isTested = "+ isTested);
+                    } else{
+                        var isTested = "False" ;  //console.log("Is run button clicked ? isTested = "+ isTested);
+                    }
+                    if ($("#result_state").length) {
+                        $( "#result_state" ).empty();                                     
+                    }
+
+                    var editorContent = editor.getValue(); //console.log(fileName)   
+                    var user = getUserName()                                   
+                    data = JSON.stringify({"user":user,"editorContent": editorContent, "fileName": fileName, 
+                                    "isTested": isTested, "qid" : qid, "qtitle": qtitle, 
+                                    "cat":cat, "runtime":runtime}),
+                    console.log("Submit Data Before Post Method --> "+data)
+                    $.ajax({
+                        type: "POST",
+                        url:'/challenge/submit/',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        data:data,
+
+                        success: function(data) {
+                            console.log("Submit Data After Post Method --> " + JSON.stringify(data));
+                            var isAccepted = data.isAccepted;  console.log(isAccepted) 
+                            var testCases = data.testCases;    console.log(testCases)
+                            var isTested = data.result;        console.log("data.result: " + data.result)
+
+                            if(data.result === "False"){  
+                                var result = 'Please run the code first';             
+                                $('#result_state').html(result);
+                            }
+                           
+                             if(isAccepted === "True"){
+                                    $('#result_state').html('Accepted..!!!')
+                                } 
+                             if(isAccepted === "False"){                                
+                                    $('#result_state').html('Not Accepted.. Please Try Again...!!!!')
+                                }                      
+                          }
+                    });
+                    $('#panel-run').hide();
+                    $('#panel-show').show();
+                });
+            }
+        });
+
+    });
+</script>
+
+
+
+{% endblock main %}
+

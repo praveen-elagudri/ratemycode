@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block title %}{% trans 'Network' %}{% endblock %}
+
+{% block head %}
+  <link href="{% static 'css/network.css' %}" rel="stylesheet">
+{% endblock head %}
+
+{% block main %}
+  <div class="page-header" style="padding-bottom:20px; border-bottom: 1px solid #000">
+    <h1>Network</h1>
+  </div>
+  <div class="users">
+
+    <div class="row">
+      {% for user in users %}
+        <div class="col-md-4">
+          <div class="panel panel-primary ">
+            <div class="panel-heading" style="font-size:16px; color:#000">
+              <img src="{{ user.profile.get_picture }}" style="width:20px">
+              <a href="{% url 'profile' user.username %}" style="font-size:16px; color:#fff; font-weight: bold">{{ user.profile.get_screen_name }}</a>
+            </div>
+            <div class="panel-body" style="font-size:16px; color:#000; ">
+              {% if user.profile.job_title %}
+                <p><strong>{% trans 'Job Title' %}:</strong>&nbsp;&nbsp;&nbsp;&nbsp;{{ user.profile.job_title }}</p>
+              {% endif %}
+              <p><strong>{% trans 'Username' %}: </strong> {{ user.username }}</p>
+              {% if user.profile.location %}
+                <p><strong>{% trans 'Location' %}:</strong> {{ user.profile.location }}</p>
+              {% endif %}
+              {% if user.profile.url %}
+                <p><strong>{% trans 'Url' %}:</strong> {{ user.profile.get_url }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% if forloop.counter|divisibleby:3 %}</div><div class="row">{% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        {% include 'paginator.html' with paginator=users %}
+      </div>
+    </div>
+
+  </div>
+{% endblock main %}

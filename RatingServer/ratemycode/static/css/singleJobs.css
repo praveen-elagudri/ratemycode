@@ -1,0 +1,47 @@
+
+/* job info */
+.job-info{padding-bottom:100px;margin-top:50px;}
+.job-info .media-body{position:relative;top:13px;left:30px}
+.job-info .fa-download{margin-top:8px;margin-top:8px;color:#b6b6b6}
+.job-info #cover{color:#b6b6b6;text-align:center;display:block}
+.job-info-download-links{max-width:250px;display:inline-block}
+.job-info-download-links i{font-size:20px;margin-bottom:20px}
+.job-info-download-links span{width:100%;display:block;color: #b6b6b6}
+.job-info-download-links:hover,
+.job-info-download-links:focus{text-decoration: none;}
+.job-info-download-links:hover i,
+.job-info-download-links:focus i,
+.job-info-download-links:hover span,
+.job-info .candidate-bottom.padding-top-30 {border: 0;padding-top: 0;}
+.media-heading.style2{font-weight:700;font-size:30px;position:relative;left:20px;color:#3f4f5e;
+    height: 80px;}
+.media-body.style2{left:0}
+
+/* Buttons */
+.jbm-button{min-width: 190px;height: 50px;line-height: 48px;font-weight: 800;display: inline-block;text-align: center;border-radius: 35px;border: 2px solid #fff;font-size: 16px;color: #fff; background-color: transparent; padding-top: 0px; padding-bottom: 0px;padding-left: 40px;padding-right: 40px;-ms-transition: all 0.4s ease-in-out;-webkit-transition: all 0.4s ease-in-out;-o-transition: all 0.4s ease-in-out;-moz-transition: all 0.4s ease-in-out;transition: all 0.4s ease-in-out;}
+.jbm-callout-in .jbm-button:focus,
+.jbm-callout-in .jbm-button:hover{background-color: #fff;color: #49565f;text-decoration: none}
+.jbm-button.wd-increase {min-width: 230px;}
+/* Button 3 */
+.jbm-button-3.jbm-hover,
+.jbm-button-3:hover,
+.jbm-button-3:focus{color:#fff;}
+
+/* Candidate personal info */
+.candidate-personal-info.jbm-accordion{border:3px solid #e4e4e4;border-radius:2px;padding:30px 35px 0;display:block;box-shadow:none;padding-bottom: 30px;}
+.candidate-personal-info a {color: #b6b6b6;display: block;}
+.candidate-personal-info a i{font-size:18px;margin-right: 8px;}
+.candidate-personal-info a:hover,
+.candidate-personal-info a:focus{text-decoration: none;}
+
+.jbm-job-content{margin-top:80px;}
+.jbm-job-content h5{font-weight: 600;margin-bottom: 40px;}
+.jbm-job-content p{color: #626262;margin-bottom:40px;}
+.jbm-job-content ul {padding-left:15px;margin-bottom: 40px;}
+.jbm-job-content ul li {line-height:34px;color:#626262;padding-left:0px;font-size:14px}
+.tag{border-top:1px solid #e4e4e4;border-bottom:1px solid #e4e4e4;padding-top:19px;padding-bottom:19px}
+.tag-inner-cont,.tag-inner-cont a{font-size:12px;color:#b6b6b6}
+.tag .fa-tags{color:#b6b6b6;font-size:12px}
+
+.list-none{margin:0;padding: 0; list-style: none;}
+

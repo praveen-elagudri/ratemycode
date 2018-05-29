@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'assets/css/jquery-ui.css' %}">
+
+<link rel="stylesheet" href="{% static 'assets/css/color.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+
+<!--<script src="{% static 'assets/js/custom.js' %}"></script>-->
+<link rel="stylesheet" href="{% static 'lib/codemirror.css' %}">
+<script src="{% static 'lib/codemirror.js' %}"></script>
+<script src="{% static 'mode/python/python.js' %}"></script>
+
+{% endblock head %}
+
+{% block main %}
+<div class="page-header" style="padding-bottom:15px; border-bottom: 1px solid #000; margin-bottom: 60px;">
+    <h1>All My Submissions</h1>
+</div>
+
+        <div class="row">
+            <div class="col-md-8">
+                
+                <div id="submission-list-app">
+                        <table id="table_submission" class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Time Submitted</th>
+                                <th>Question</th>
+                                <th>Status</th>
+                                <th>Runtime</th>
+                                <th>Code Quality</th>
+                                <th>Details</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td id="date"></td>
+                                <td id=question></td>
+                                <td id="status"><a class="text-success" href=""><strong></strong></a></td>
+                                <td id=runtime></td>
+                                 <td id="quality"> </td>
+                                <td id="showinfo"> <a  href="#">Click here for more details</a></td>
+                            </tr>
+                            </tbody>
+                        </table>                       
+                </div>
+            </div>
+
+            <div class="col-md-4" >
+                    <div id="receiveInfo" class="panel panel-default" style="border: 1px solid #000;border-radius: 5px;margin-top: 15px;margin-bottom: 15px;">
+                        <div class="panel-heading">
+                            <h3 class="panel-title" id="quality"> </h3>
+                        </div>
+                        <ul id="showMetrics">
+						</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <style>
+        #receiveInfo{display:none;}
+    </style>
+<script>
+
+$(document).ready(function () {   
+    data = {"user":"shailykhare"}
+    $.ajax({
+        type:'GET',
+        dataType:'json',
+        url:'/challenge/submissions/',
+        success:function (data) {
+           //console.log(data);
+         		var date = data[0].date;			//console.log(date)
+                var question = data[0].question;	//console.log(question)
+                var status = data[0].status;		//console.log(status)
+                var runtime = data[0].runtime;		//console.log(runtime)
+                var quality = data[0].quality;		//console.log(quality)
+
+                $('#date').html(date);
+                $('#question').html(question);
+                $('#status').html(status);
+                $('#runtime').html(runtime);
+                $('#quality').html(quality);
+        } ,
+    });       
+});
+
+
+$( "#showinfo" ).click(function() {   	
+    $.ajax({
+        type:'GET',
+        dataType:'json',
+        url:'/challenge/submissions/',
+        success:function (data) {
+
+           
+               console.log(data);
+               var metrics = data[0].metrics; console.log(metrics)
+               var arr = JSON.parse(metrics);console.log(arr)
+               var loc = arr.loc;  console.log(loc)
+               // var loc = metrics.loc; 
+               // 
+				$("#showMetrics").append("<li>Line count of code: "+ loc + "</li>");
+                $("#showMetrics").append("<li> Cyclomatic Complexity : "+ arr.cc + "</li>");
+                $("#showMetrics").append("<li>Total lines : "+ arr.n + "</li>");
+                $("#showMetrics").append("<li>Volume : "+ arr.volume + "</li>");
+                $("#showMetrics").append("<li> Length : "+ arr.prolength + "</li>");
+                $("#showMetrics").append("<li>Difficulty : "+ arr.difficulty + "</li>");
+                $("#showMetrics").append("<li>Effort : "+ arr.effort + "</li>");
+                $("#showMetrics").append("<li>Bugs : "+ arr.bug + "</li>");
+                $("#showMetrics").append("<li>Estimated time : "+ arr.time_est + "</li>");
+                $("#showMetrics").append("<li>Line of code : "+ arr.lOcode + "</li>");
+                $("#showMetrics").append("<li>Line of comment : "+ arr.lOComment + "</li>");
+                $("#showMetrics").append("<li>Blank lines : "+ arr.lOBlank + "</li>");
+                $("#showMetrics").append("<li>Line of Code and Comment : "+ arr.lOCodeAndComment + "</li>");
+                $("#showMetrics").append("<li>Unique operator : "+ arr.uniq_Op + "</li>");
+                $("#showMetrics").append("<li>Unique Operand : "+ arr.uniq_Opnd + "</li>");
+                $("#showMetrics").append("<li>Total operator : "+ arr.total_Op + "</li>");
+                $("#showMetrics").append("<li>Total operand : "+ arr.total_Opnd + "</li>");
+        },
+    });   
+
+       /* console.log( "Handler for .click() called...." );
+        var id = $(this).closest("tr").find('td:eq(0)').text();
+        var id1 = $(this).closest("tr").find('td:eq(1)').text();
+        var id2 = $(this).closest("tr").find('td:eq(2)').text();
+        console.log(id + id1 +id2);*/
+        $('#receiveInfo').show();
+    });
+</script>
+
+
+
+
+{% endblock main %}

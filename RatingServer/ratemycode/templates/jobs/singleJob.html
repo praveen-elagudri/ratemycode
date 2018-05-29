@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'assets/css/color.css' %}">
+<link rel="stylesheet" href="{% static 'css/singleJobs.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+
+<script src="{% static 'assets/js/custom.js' %}"></script>
+<script src="{% static 'assets/lib/slick/slick.js' %}"></script>
+<script src="{% static 'assets/lib/select2/js/select2.full.min.js' %}"></script>
+{% endblock head %}
+
+{% block main %}
+
+
+
+<div class="job-info ">
+
+    <div class="container">
+        <div class="row margin-bottom-60">
+            <div class="col-md-6 ">
+
+                <div class="media">
+
+                    <div class="media-body style2">
+                        <h5 class="media-heading style2" id="company_name">CompanyA</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-6 full-wdth">
+                <div class="candidate-bottom padding-top-30 text-right stl2">
+                    <a id ="how_to_apply" href="#" class="jbm-button  jbm-button-3">Apply for Job</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-11" >
+                <div class="candidate-personal-info jbm-relative jbm-accordion" >
+                    <div class="row" style="font-size:20px" style="padding-bottom: 100px;">
+                        <div  class="col-md-5 margin-bottom-30">
+                            <i class="fa fa-map-marker" aria-hidden="true">&nbsp;&nbsp;<span id="location"></span></i>
+                        </div>
+                        <div class="col-md-4 margin-bottom-30">
+                            <i class="fa fa-bars" aria-hidden="true">&nbsp;&nbsp;<span id="title"></span></i>
+                        </div>
+                        <div class="col-md-2 margin-bottom-30">
+                            <i class="fa fa-id-card" aria-hidden="true">&nbsp;&nbsp;<span id="type"></span></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="jbm-job-content">
+
+                    <h5 >Job Description</h5>
+                    <p id="description">
+
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var id = localStorage.getItem('id');
+        // alert('id recieved: '+id);
+        console.log('id received: '+ id);
+
+        $.ajax({
+            type:'GET',
+            dataType:'jsonp',
+            //  url:'https://jobs.github.com/positions.json?search=node',
+            url:'https://jobs.github.com/positions.json?search='+id,
+            success:function (data) {
+                console.log(data);
+                console.log(data[0]);
+                var title = data[0].title;
+                var location = data[0].location;
+                var type = data[0].type;
+                var company_name = data[0].company;
+                var description = data[0].description;
+                var how_to_apply = data[0].how_to_apply;
+                //var how_to_apply = data[0].how_to_apply.substring(0,28);
+
+                $('#title').html(title);
+                $('#location').html(location);
+                $('#type').html(type);
+                $('#company_name').html(company_name);
+                $('#description').html(description);
+                $('#how_to_apply').html(how_to_apply);
+            },
+            error:function () {
+                //alert('error');
+            }
+        });
+    });
+</script>
+
+
+{% endblock main %}

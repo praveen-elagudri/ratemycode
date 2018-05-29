@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Rate My Code</title>
+    <!-- stylesheets-->
+    <link rel="stylesheet" type="text/css" href="../../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/css/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/lib/slick/slick.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/lib/slick/slick-theme.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/css/color.css">
+    <link rel="stylesheet" type="text/css" href="../../assets/css/responsive.css">
+
+    <script>
+        function login(){
+            var username = document.getElementById("email-address").value
+            var password = document.getElementById("new-pass2").value
+
+            var data = {"email":username,"password" : password};
+            console.log(data);
+
+            if( username != "" && password != "" ){
+                $.ajax({
+                    url:'localhost:8080/login',
+                    dataType: 'text',
+                    type:'post',
+                    contentType: 'application/json',
+                    data:JSON.stringify(data),
+                    success:function(response){
+                        console.log(username +" " + password);
+                        var msg = "";
+                        if(response){
+                            console.log(response);
+
+                            var responseObject = response;
+                            localStorage.setItem('responseObject',JSON.stringify(responseObject))
+                            window.location = "employer-information.html";
+
+                        }else{
+                            msg = "Invalid username and password!";
+                        }
+                        $("#message").html(msg);
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        //OnError(cartObject.productID)
+                    },
+                });
+            }
+        };
+
+    </script>
+
+</head>
+
+<body>
+
+<!-- Candidate popup -->
+    <div class="jbm-popup">
+        <div id="popup1" class="overlay">
+            <div class="container popup">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-md-5 jbm-login-side">  
+                                    <i class="fa fa-lightbulb-o margin-bottom-50" aria-hidden="true"></i>
+                                    <span class="section-tit-line"></span>
+                                    <h3 class="margin-bottom-60">Login</h3>
+                                    <ul>
+                                        <li>
+                                            <a href="#">Not yet registered? </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Register Here</a>
+                                        </li>
+                                    </ul>
+
+                                    <ul class="jbm-social-icons">
+                                        <li>
+                                            <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-pinterest-p" aria-hidden="true"></i></a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a>
+                                        </li>
+                                    </ul>
+                            </div>
+                            <div class="col-md-7 jbm-form">
+                                <ul class="jbm-login-form padding-top-40">
+                                    <li class="candidate">
+                                        <a href="#">Candidate</a>
+                                    </li>
+                                    <li  class="employer selected">
+                                        <a href="#">Employer</a>
+                                    </li>
+                                </ul>
+                                <div class="jbm-field margin-top-60">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="text" name="email-address" id="email-address" class="form-control">
+                                            <label for="email-address">Email Address*</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="text" name="new-pass" id="new-pass2" class="form-control">
+                                            <label for="new-pass2">Enter Password*</label>
+                                        </div>
+                                    </div>
+                                    <a href="#" class="jbm-button jbm-button-3 jbm-hover margin-bottom-40 margin-top-20">Login</a>
+                                    <div class="row margin-bottom-70">
+                                        <div class="col-md-6">
+                                            <input type="checkbox">
+                                            <small>Keep me logged in</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <a href="#" class="forgot">Forgot Password</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="row margin-bottom-65">
+                                        <div class="col-md-5 or">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <span>OR</span>
+                                        </div>
+                                        <div class="col-md-5 or">
+                                        </div>
+                                    </div>
+
+                                    <div class="jbm-social-icons-2">
+                                        <ul>
+                                            <li class="facebook">
+                                                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                            </li>
+                                            <li class="google-plus">
+                                                <a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+                                            </li>
+                                            <li class="twitter">
+                                                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                                            </li>
+                                            <li class="linkedin">
+                                                <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Candidate popup -->
+
+<!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="assets/lib/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="assets/lib/slick/slick.js" type="text/javascript"></script>
+    <script src="assets/js/custom.js" type="text/javascript"></script>
+<!-- Scripts -->
+</body>
+</html>

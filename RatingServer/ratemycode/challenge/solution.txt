@@ -1,0 +1,32 @@
+Easy
+Two Sum 
+
+        nums_hash = {}
+        for i in range(len(nums)):
+            if target - nums[i] in nums_hash: 
+                return [nums_hash[target - nums[i]], i]
+            nums_hash[nums[i]] = i
+
+
+
+Medium
+LCS
+        substr = ''; max1 = 0
+        d1 = {}
+        for i in xrange(len(s)):
+            if s[i] not in substr:
+                substr = substr + s[i]
+            else:
+                substr = s[d1[s[i]] + 1 : i + 1]
+            max1 = max(max1, len(substr))
+            d1[s[i]] = i
+        return max1
+
+Hard
+        l=nums1+nums2
+        l.sort()
+        a=len(l)
+        if(a%2!=0):
+            return float(l[a//2])
+        else:
+            return float((l[(a//2)-1]+l[a//2])/2)
